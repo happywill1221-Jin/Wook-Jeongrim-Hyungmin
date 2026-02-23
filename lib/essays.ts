@@ -1,6 +1,8 @@
-import { supabase } from './supabase'
+import { getSupabase } from './supabase'
 
 export async function getPublicEssays() {
+  const supabase = getSupabase()
+
   const { data } = await supabase
     .from('essays')
     .select('*')
@@ -11,6 +13,8 @@ export async function getPublicEssays() {
 }
 
 export async function getAllEssays() {
+  const supabase = getSupabase()
+
   const { data } = await supabase
     .from('essays')
     .select('*')
@@ -20,6 +24,8 @@ export async function getAllEssays() {
 }
 
 export async function addEssay(essay: any) {
+  const supabase = getSupabase()
+
   const { data, error } = await supabase
     .from('essays')
     .insert([essay])
@@ -28,7 +34,10 @@ export async function addEssay(essay: any) {
   if (error) throw error
   return data?.[0]
 }
+
 export async function getEssayById(id: string) {
+  const supabase = getSupabase()
+
   const { data, error } = await supabase
     .from('essays')
     .select('*')
@@ -40,6 +49,8 @@ export async function getEssayById(id: string) {
 }
 
 export async function createEssay(essay: any) {
+  const supabase = getSupabase()
+
   const { data, error } = await supabase
     .from('essays')
     .insert([essay])
@@ -51,6 +62,8 @@ export async function createEssay(essay: any) {
 }
 
 export async function updateEssay(id: string, updates: any) {
+  const supabase = getSupabase()
+
   const { data, error } = await supabase
     .from('essays')
     .update(updates)
@@ -63,6 +76,8 @@ export async function updateEssay(id: string, updates: any) {
 }
 
 export async function deleteEssay(id: string) {
+  const supabase = getSupabase()
+
   const { error } = await supabase
     .from('essays')
     .delete()
