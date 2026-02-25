@@ -1,17 +1,14 @@
-import { getEssayById } from '@/lib/essays'
-import { notFound } from 'next/navigation'
-import EditorForm from '@/components/EditorForm'
+import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
+import Editor from "./Editor"
 
-export default async function EditorPage({
-  params,
-}: {
-  params: { id: string }
-}) {
-  const essay = await getEssayById(params.id)
+export default function NewPostPage() {
+  const cookieStore = cookies()
+  const isAdmin = cookieStore.get("admin")
 
-  if (!essay) {
-    notFound()
+  if (!isAdmin) {
+    redirect("/login")
   }
 
-  return <EditorForm essay={essay} />
+  return <Editor />
 }
