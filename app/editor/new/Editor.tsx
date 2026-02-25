@@ -8,17 +8,29 @@ export default function Editor() {
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+async function handleSubmit(e: React.FormEvent) {
+  e.preventDefault()
 
-    await fetch("/api/posts", {
-      method: "POST",
-      body: JSON.stringify({ title, content }),
-    })
+  const res = await fetch("/api/posts", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ title, content }),
+  })
 
-    router.push("/")
-    router.refresh()
+  const data = await res.json()
+  console.log("API 응답:", data)
+
+  if (!res.ok) {
+    alert("저장 실패")
+    return
   }
+
+  alert("저장 성공")
+  router.push("/")
+  router.refresh()
+}
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
