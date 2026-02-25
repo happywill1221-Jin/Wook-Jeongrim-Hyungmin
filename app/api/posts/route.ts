@@ -1,15 +1,35 @@
 import { NextResponse } from "next/server"
-import { addPost } from "@/lib/posts"
+import { createClient } from "@supabase/supabase-js"
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export async function POST(req: Request) {
-  const { title, content } = await req.json()
+  try {
+    const { title, content } = await req.json()
 
-  addPost({
-    id: Date.now().toString(),
-    title,
-    content,
-    date: new Date().toISOString().slice(0, 10),
-  })
+    const { data, error } = await supabase
+      .from("posts")
+      .insert([
+        {
+          title,
+          content,
+        },
+      ])
+      .select()
 
-  return NextResponse.json({ success: true })
+    console.log("INSERT RESULT:", data, error)
+
+    if (error) {
+      console.error("INSERT ERROR:", error)
+      return NextResponse.json({ error }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true, data })
+  } catch (err) {
+    console.error("SERVER ERROR:", err)
+    return NextResponse.json({ error: "Server error" }, { status: 500 })
+  }
 }
