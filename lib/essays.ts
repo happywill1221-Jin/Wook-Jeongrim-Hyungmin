@@ -1,7 +1,6 @@
-import { getSupabase } from './supabase'
+import { supabase } from './supabase'
 
 export async function getPublicEssays() {
-  const supabase = getSupabase()
 
   const { data } = await supabase
     .from('essays')
