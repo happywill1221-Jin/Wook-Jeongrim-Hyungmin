@@ -1,46 +1,52 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { supabase } from "@/lib/supabase"
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
-  const router = useRouter()
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const router = useRouter()
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
 
-    const res = await fetch("/api/login", {
-      method: "POST",
-      body: JSON.stringify({ password }),
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     })
 
-    if (res.ok) {
-      router.push("/")
-      router.refresh()
-    } else {
-      alert("비밀번호가 틀렸습니다")
+    if (error) {
+      alert(error.message)
+      return
     }
+
+    router.push("/")
   }
 
   return (
-    <form onSubmit={handleLogin} className="space-y-6">
-      <h1 className="text-2xl font-semibold">관리자 로그인</h1>
-
-      <input
-        type="password"
-        placeholder="비밀번호 입력"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full border-b border-neutral-300 pb-2 outline-none"
-      />
-
-      <button
-        type="submit"
-        className="bg-black text-white px-6 py-2 rounded"
-      >
-        로그인
-      </button>
-    </form>
+    <main className="max-w-md mx-auto py-24 px-6">
+      <form onSubmit={handleLogin} className="space-y-6">
+        <input
+          className="w-full border p-3 rounded"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          className="w-full border p-3 rounded"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button
+          className="w-full bg-black text-white py-3 rounded"
+        >
+          Login
+        </button>
+      </form>
+    </main>
   )
 }

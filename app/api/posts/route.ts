@@ -10,8 +10,15 @@ export async function POST(req: Request) {
   try {
     const { title, content } = await req.json()
 
+    if (!title || !content) {
+      return NextResponse.json(
+        { error: "Title and content are required" },
+        { status: 400 }
+      )
+    }
+
     const { data, error } = await supabase
-      .from("posts")
+      .from("posts") // ✅ 반드시 소문자
       .insert([
         {
           title,
@@ -19,8 +26,6 @@ export async function POST(req: Request) {
         },
       ])
       .select()
-
-    console.log("INSERT RESULT:", data, error)
 
     if (error) {
       console.error("INSERT ERROR:", error)
@@ -30,6 +35,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, data })
   } catch (err) {
     console.error("SERVER ERROR:", err)
-    return NextResponse.json({ error: "Server error" }, { status: 500 })
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    )
   }
 }

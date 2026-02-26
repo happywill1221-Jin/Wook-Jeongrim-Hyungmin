@@ -10,7 +10,8 @@ export default function Editor() {
   const [content, setContent] = useState("")
   const [loading, setLoading] = useState(false)
 
-  async function handleSubmit() {
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
     console.log("🔥 SUBMIT CLICKED")
 
     if (!title.trim() || !content.trim()) {
@@ -29,9 +30,6 @@ export default function Editor() {
         body: JSON.stringify({ title, content }),
       })
 
-      const data = await res.json()
-      console.log("API 응답:", data)
-
       if (!res.ok) {
         alert("저장 실패")
         setLoading(false)
@@ -43,14 +41,14 @@ export default function Editor() {
       router.refresh()
 
     } catch (err) {
-      console.error("CLIENT ERROR:", err)
-      alert("클라이언트 오류")
+      console.error(err)
+      alert("오류 발생")
       setLoading(false)
     }
   }
 
   return (
-    <div className="space-y-8 max-w-3xl">
+    <form onSubmit={handleSubmit} className="space-y-8 max-w-3xl">
       <h1 className="text-2xl font-semibold">
         새 에세이
       </h1>
@@ -70,13 +68,12 @@ export default function Editor() {
       />
 
       <button
-        type="button"
-        onClick={handleSubmit}
+        type="submit"
         disabled={loading}
         className="bg-black text-white px-6 py-2 rounded disabled:opacity-50"
       >
         {loading ? "저장 중..." : "저장하기"}
       </button>
-    </div>
+    </form>
   )
 }

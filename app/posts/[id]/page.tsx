@@ -1,25 +1,49 @@
-import { notFound } from "next/navigation"
-import { getPost } from "@/lib/posts"
+"use client"
 
-export default function PostPage({ params }: { params: { id: string } }) {
-  const post = getPost(params.id)
+import { useEffect, useState } from "react"
+import { useParams } from "next/navigation"
+import { supabase } from "@/lib/supabase"
 
-  if (!post) return notFound()
+export default function PostPage() {
+  const params = useParams()
+  const [post, setPost] = useState<any>(null)
+
+  useEffect(() => {
+    if (!params?.id) return
+
+    async function fetchPost() {
+      const { data, error } = await supabase
+        .from("posts") // ✅ 소문자!
+        .select("*")
+        .eq("id", params.id) // ✅ UUID 그대로
+        .single()
+
+      if (error) {
+        console.error("FETCH ERROR:", error)
+      } else {
+        console.log("SUCCESS:", data)
+        setPost(data)
+      }
+    }
+
+    fetchPost()
+  }, [params])
+
+  if (!post) return <p className="p-10">Loading...</p>
 
   return (
-    <article className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight">
-          {post.title}
-        </h1>
-        <p className="mt-2 text-sm text-neutral-400">
-          {post.date}
-        </p>
-      </div>
+    <main className="max-w-3xl mx-auto py-24 px-6">
+      <h1 className="text-4xl font-semibold mb-6">
+        {post.title}
+      </h1>
 
-      <p className="text-neutral-700 leading-relaxed">
-        {post.content}
+      <p className="text-neutral-500 mb-10">
+        {new Date(post.created_at).toLocaleDateString()}
       </p>
-    </article>
+
+      <div className="prose">
+        {post.content}
+      </div>
+    </main>
   )
 }
