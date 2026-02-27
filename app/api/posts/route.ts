@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     }
 
     const { data, error } = await supabase
-      .from("posts") // ✅ 반드시 소문자
+      .from("essays") // ✅ 반드시 소문자
       .insert([
         {
           title,

@@ -13,7 +13,7 @@ export default function PostPage() {
 
     async function fetchPost() {
       const { data, error } = await supabase
-        .from("posts") // ✅ 소문자!
+        .from("essays") // ✅ 소문자!
         .select("*")
         .eq("id", params.id) // ✅ UUID 그대로
         .single()

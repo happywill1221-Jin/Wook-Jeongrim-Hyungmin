@@ -21,7 +21,7 @@ export default function Editor() {
     try {
       setLoading(true)
 
-      const res = await fetch("/api/posts", {
+      const res = await fetch("/api/essays", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -5,8 +5,8 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 
 export default async function Page() {
-  const { data: posts } = await supabase
-    .from("posts")
+  const { data: essays } = await supabase
+    .from("essays")
     .select("*")
     .order("created_at", { ascending: false })
 
