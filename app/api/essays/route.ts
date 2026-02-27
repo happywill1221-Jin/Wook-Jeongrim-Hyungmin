@@ -1,19 +1,32 @@
 export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
-import { getAllEssays, createEssay } from '@/lib/essays'
+import { supabase } from '@/lib/supabase'
 
 export async function GET() {
-  return NextResponse.json(getAllEssays())
+  const { data } = await supabase
+    .from('essays')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  return NextResponse.json(data ?? [])
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json()
-  const { title, body: content, category, tags, isPublic } = body
+  const { title, content } = await req.json()
 
   if (!title || !content) {
-    return NextResponse.json({ error: '제목과 본문은 필수입니다.' }, { status: 400 })
+    return NextResponse.json({ error: '제목과 내용을 입력해주세요' }, { status: 400 })
   }
 
-  const essay = createEssay({ title, body: content, category, tags: tags ?? [], isPublic: isPublic ?? true })
-  return NextResponse.json(essay, { status: 201 })
+  const { data, error } = await supabase
+    .from('essays')
+    .insert([{ title, content, is_public: true }])
+    .select()
+
+  if (error) {
+    console.error("INSERT ERROR:", error)
+    return NextResponse.json({ error }, { status: 500 })
+  }
+
+  return NextResponse.json({ success: true, data })
 }
